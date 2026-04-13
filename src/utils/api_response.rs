@@ -1,5 +1,7 @@
-use actix_web::{Responder, http::StatusCode, body::BoxBody, web, HttpResponse};
+use actix_web::{Responder, http::StatusCode, body::BoxBody, web, HttpResponse, ResponseError};
+use std::fmt::Display;
 
+#[derive(Debug)]
 pub struct ApiResponse {
     pub status_code: u16,
     pub body: String,
@@ -22,5 +24,22 @@ impl Responder for ApiResponse {
     fn respond_to(self, req: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
         let body = BoxBody::new(web::BytesMut::from(self.body.as_bytes()));
         HttpResponse::new(self.response_code).set_body(body)
+    }
+}
+
+impl Display for ApiResponse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Error: {} \n Status Code: {}", self.body, self.status_code)
+    }
+}
+
+impl ResponseError for ApiResponse {
+    fn status_code(&self) -> StatusCode {
+        self.response_code
+    }
+
+    fn error_response(&self) -> HttpResponse<BoxBody> {
+        let body = BoxBody::new(web::BytesMut::from(self.body.as_bytes()));
+        HttpResponse::new(self.status_code()).set_body(body)
     }
 }
