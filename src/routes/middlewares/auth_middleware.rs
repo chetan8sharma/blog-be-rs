@@ -3,7 +3,8 @@ use actix_web::{
     dev::{ServiceRequest, ServiceResponse},
     http::header::AUTHORIZATION,
     Error,
-    middleware::Next
+    middleware::Next,
+    HttpMessage
 };
 
 use crate::utils::{api_response::ApiResponse, jwt};
@@ -20,6 +21,7 @@ pub async fn check_auth_middleware(
 
     let token = auth.unwrap().to_str().unwrap().replace("Bearer ", "").to_owned();
     let claim = jwt::decode_jwt(token).unwrap();
+    req.extensions_mut().insert(claim.claims);
 
     next.call(req).await.map_err(|err| Error::from(ApiResponse::new(500, err.to_string())))
 }
