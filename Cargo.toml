@@ -19,6 +19,9 @@ sha256 = "1.6.0"
 chrono = "0.4.44"
 jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 actix-web-lab = "0.26.0"
+actix-multipart = "0.7.2"
+sanitize-filename = "0.6.0"
+
 [dependencies.uuid]
 version = "1.23.0"
 # Lets you generate random UUIDs
